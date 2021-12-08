@@ -10,9 +10,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles(profiles = "test")
@@ -24,6 +25,8 @@ class DeveloperControllerTest {
 
     @Test
     void getAllDevelopers() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/developers").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/developers").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
+
 }

@@ -2,7 +2,11 @@ package org.rygn.kanban.controller;
 
 import org.rygn.kanban.dao.TaskRepository;
 import org.rygn.kanban.domain.Task;
+import org.rygn.kanban.domain.TaskStatus;
+import org.rygn.kanban.domain.TaskType;
 import org.rygn.kanban.service.TaskService;
+import org.rygn.kanban.utils.Constants;
+import org.rygn.kanban.utils.TaskMoveAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,18 +28,33 @@ public class TaskController {
         return taskService.findAllTasks();
     }
 
+    @GetMapping("/task_types")
+    public Collection<TaskType> getAllTaskTypes(){
+        return taskService.findAllTaskTypes();
+    }
+
+    @GetMapping("/task_status")
+    Collection<TaskStatus> getAllTaskStatus() {
+        return taskService.findAllTaskStatus();
+    }
+
     @PostMapping("/tasks")
     public Task createNewTask(@RequestBody Task task){
-        return taskRepository.save(task);
+        return taskService.createTask(task);
     }
 
     @PatchMapping("/tasks/{id}")
-    public Task moveTask(String direction, @RequestBody Task task){
-        Task movedTask = switch(direction){
-            case "left" -> taskService.moveLeftTask(task);
-            case "right"-> taskService.moveRightTask(task);
-            default -> task;
-        };
-        return movedTask;
+    public Task moveTask(TaskMoveAction taskMoveAction, @PathVariable Long id){
+        Task taskMoved = taskService.findTask(id);
+        if (Constants.MOVE_LEFT_ACTION == taskMoveAction.getAction()){
+            taskMoved = taskService.moveLeftTask(taskMoved);
+        }
+        else if (Constants.MOVE_RIGHT_ACTION == taskMoveAction.getAction()){
+            taskMoved = taskService.moveRightTask(taskMoved);
+        }
+        else{
+            taskMoved = taskMoved;
+        }
+        return taskMoved;
     }
 }
